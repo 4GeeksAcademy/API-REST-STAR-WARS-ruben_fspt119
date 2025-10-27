@@ -256,7 +256,20 @@ def add_favorite_starship(user_id, starship_id):
 
     return jsonify({'msg': 'Starship agregada a favoritos'}), 200
 
+@app.route('/favorite/<int:user_id>/starship/<int:starship_id>', methods=['DELETE'])
+def delete_favorite_starship(user_id, starship_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'msg': f'El usuario con id {user_id} no existe'}), 404
 
+    favorite = FavoriteStarships.query.filter_by(user_id=user.id, starship_id=starship_id).first()
+    if not favorite:
+        return jsonify({'msg': f'La nave espacial con id {starship_id} no está en favoritos'}), 404
+
+    db.session.delete(favorite)
+    db.session.commit()
+
+    return jsonify({'msg': 'Nave espacial eliminada de favoritos'}), 200
 
 
 # this only runs if `$ python src/app.py` is executed
